@@ -5,6 +5,9 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class UI extends JFrame{
+	
+	Color menuItemColor = new Color(33, 33, 33);
+	
 	UI() {
 		initializeFrame();
 		setupMenuBar();
@@ -22,10 +25,15 @@ public class UI extends JFrame{
 	}
 	
 	private void setupMenuBar() {
-		Color aestheticTextColor = new Color(80, 80, 160); // Muted Indigo
-		
+		  try {
+		        UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+
 		JMenuBar menuBar = new JMenuBar();
-		menuBar.setForeground(aestheticTextColor); // menuBar.setBackground(new Color(80, 80, 160);
+		menuBar.setForeground(Color.DARK_GRAY); 
+		menuBar.setBackground(Color.LIGHT_GRAY);
 		
 		JMenu fileMenu = setupFileMenu();
 		menuBar.add(fileMenu);
@@ -49,24 +57,30 @@ public class UI extends JFrame{
 		JMenuItem newTask = new JMenuItem("New Task");
 		fileMenu.add(newTask);
 		newTask.setToolTipText("Create a new task");
+		newTask.setForeground(menuItemColor);
 		
 		JMenuItem saveTask = new JMenuItem("Save Task");
 		fileMenu.add(saveTask);
 		saveTask.setToolTipText("Save teh current task list to a file");
+		saveTask.setForeground(menuItemColor); 
 		
 		JMenuItem loadTask = new JMenuItem("Load Task");
 		fileMenu.add(loadTask);
 		loadTask.setToolTipText("Load tasks from a file");
+		loadTask.setForeground(menuItemColor); 
 		
 		JMenuItem export = new JMenuItem("Export");
 		fileMenu.add(export);
 		export.setToolTipText("Export tasks as .txt");
+		export.setForeground(menuItemColor); 
 		
 		fileMenu.addSeparator();
 		
 		JMenuItem exit = new JMenuItem("Exit");
 		fileMenu.add(exit);
 		exit.setToolTipText("Close the application");
+		exit.setForeground(new Color(255, 87, 87)); // Coral red 
+		
 		
 		return fileMenu;
 	}

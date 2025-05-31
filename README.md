@@ -31,7 +31,6 @@ This project is a work in progress. More features and refinements will be added 
 
 ## 📦 Structure
 
-<pre>
 ```bash
 ToDoList
 ├── bin
@@ -40,7 +39,6 @@ ToDoList
 │       ├── Main.java
 │       └── UI.java
 ```
-</pre>
 
 ## 🚀 To Run
 

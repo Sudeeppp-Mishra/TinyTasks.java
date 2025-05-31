@@ -30,13 +30,17 @@ This project is a work in progress. More features and refinements will be added 
 ---
 
 ## 📦 Structure
-ToDoList/
-├── bin/                    # Compiled class files
-├── src/                    # Source files
-│   └── todopack/           # Java package
-│       ├── Main.java       # Entry point of the app
-│       └── UI.java         # Swing-based UI design
 
+<pre>
+```bash
+ToDoList
+├── bin
+├── src
+│   └── todopack
+│       ├── Main.java
+│       └── UI.java
+```
+</pre>
 
 ## 🚀 To Run
 

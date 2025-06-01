@@ -11,6 +11,7 @@ public class UI extends JFrame{
 	UI() {
 		initializeFrame();
 		setupMenuBar();
+		setupUI();
 		
 		setVisible(true);
 	}
@@ -158,4 +159,78 @@ public class UI extends JFrame{
 		
 		return helpMenu;
 	}
+	
+	// ========== SETUP UI LAYOUT ==========
+	private void setupUI() {
+	    JPanel mainPanel = new JPanel(new BorderLayout(20, 20)); // Add spacing between regions
+	    mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40)); // Top, left, bottom, right
+
+	    // Task Input Panel (Top)
+	    JPanel taskInputPanel = setupTaskInputPanel();
+	    mainPanel.add(taskInputPanel, BorderLayout.NORTH);
+
+	    // Task List Panel (Center)
+	    JScrollPane taskScrollPane = setupTaskListPanel();
+	    mainPanel.add(taskScrollPane, BorderLayout.CENTER);
+
+	    // Footer Controls (Bottom)
+	    JPanel footerPanel = setupFooterPanel();
+	    mainPanel.add(footerPanel, BorderLayout.SOUTH);
+
+	    JScrollPane contentScrollPane = new JScrollPane(mainPanel);
+	    contentScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+	    contentScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	    
+	    setLayout(new BorderLayout());
+	    add(contentScrollPane, BorderLayout.CENTER); 
+	}
+	
+	private JPanel setupTaskInputPanel() {
+	    JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
+
+	    JTextField taskField = new JTextField();
+	    taskField.setPreferredSize(new Dimension(400, 35));
+	    taskField.setFont(new Font("Chalkboard", Font.PLAIN, 16));
+
+	    JButton addButton = new JButton("Add Task");
+	    addButton.setPreferredSize(new Dimension(120, 35));
+	    addButton.setFont(new Font("Chalkboard", Font.BOLD, 14));
+
+	    panel.add(taskField);
+	    panel.add(addButton);
+
+	    return panel;
+	}
+
+	private JScrollPane setupTaskListPanel() {
+	    JPanel listPanel = new JPanel();
+	    listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
+	    listPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+	    // Dummy placeholder task (you can add dynamically later)
+	    JLabel dummyTask = new JLabel("• Sample Task");
+	    dummyTask.setFont(new Font("Chalkboard", Font.PLAIN, 16));
+	    listPanel.add(dummyTask);
+
+	    JScrollPane scrollPane = new JScrollPane(listPanel);
+	    scrollPane.setPreferredSize(new Dimension(800, 500));
+	    return scrollPane;
+	}
+
+	private JPanel setupFooterPanel() {
+	    JPanel panel = new JPanel(new GridLayout(1, 4, 15, 0));
+	    panel.setPreferredSize(new Dimension(600, 50));
+
+	    String[] labels = {"All", "Active", "Completed", "Clear All"};
+
+	    for (String text : labels) {
+	        JButton btn = new JButton(text);
+	        btn.setFont(new Font("Arial", Font.BOLD, 14));
+	        btn.setPreferredSize(new Dimension(140, 40));
+	        panel.add(btn);
+	    }
+
+	    return panel;
+	}
+	
 }

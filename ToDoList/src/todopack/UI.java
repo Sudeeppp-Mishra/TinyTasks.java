@@ -1,10 +1,17 @@
 package todopack;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
 public class UI extends JFrame{
+	private JTextField taskField;
+	private JPanel listPanel;
+	private JLabel dummyTask;
+	private boolean isFirstTaskAdded = false;
 	
 	Color menuItemColor = new Color(33, 33, 33);
 	
@@ -18,10 +25,13 @@ public class UI extends JFrame{
 	
 	// ========== INIT FRAME ==========
 	private void initializeFrame() {
-		setExtendedState(MAXIMIZED_BOTH);
+		//setExtendedState(MAXIMIZED_VERT);
+		setTitle("To Do List");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setSize(500,600);
 		setLocationRelativeTo(null);
 		setLayout(new FlowLayout());
+		
 		
 	}
 	
@@ -188,13 +198,70 @@ public class UI extends JFrame{
 	private JPanel setupTaskInputPanel() {
 	    JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
 
-	    JTextField taskField = new JTextField();
+	    taskField = new JTextField();
 	    taskField.setPreferredSize(new Dimension(400, 35));
 	    taskField.setFont(new Font("Chalkboard", Font.PLAIN, 16));
 
 	    JButton addButton = new JButton("Add Task");
 	    addButton.setPreferredSize(new Dimension(120, 35));
 	    addButton.setFont(new Font("Chalkboard", Font.BOLD, 14));
+
+	    // Add task action
+	    addButton.addActionListener(e -> {
+	        String taskText = taskField.getText().trim();
+	        if (!taskText.isEmpty()) {
+	            if (!isFirstTaskAdded) {
+	                listPanel.remove(dummyTask);
+	                isFirstTaskAdded = true;
+	            }
+
+	            String timestamp = new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm a").format(new java.util.Date());
+
+	            // Horizontal panel for a single task
+	            JPanel taskRow = new JPanel();
+	            taskRow.setLayout(new BoxLayout(taskRow, BoxLayout.X_AXIS));
+	            taskRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+	            taskRow.setOpaque(false);
+	            taskRow.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+	            // Checkbox for task
+	            JCheckBox checkBox = new JCheckBox(taskText);
+	            checkBox.setFont(new Font("Chalkboard", Font.PLAIN, 16));
+	            checkBox.setOpaque(false);
+
+	            // Timestamp label
+	            JLabel timeLabel = new JLabel("  [" + timestamp + "]");
+	            timeLabel.setFont(new Font("Arial", Font.PLAIN, 13));
+	            timeLabel.setForeground(new Color(80, 80, 80)); // darker gray for visibility
+
+	            // Handle checkbox toggle (HTML strike-through)
+	            checkBox.addActionListener(ev -> {
+	                if (checkBox.isSelected()) {
+	                    checkBox.setText("<html><strike>" + taskText + "</strike></html>");
+	                    checkBox.setForeground(Color.GRAY);
+	                } else {
+	                    checkBox.setText(taskText);
+	                    checkBox.setForeground(Color.BLACK);
+	                }
+	            });
+
+	            // Add checkbox and timestamp to row
+	            taskRow.add(checkBox);
+	            taskRow.add(Box.createRigidArea(new Dimension(10, 0)));
+	            taskRow.add(timeLabel);
+
+	            listPanel.add(taskRow);
+	            listPanel.revalidate();
+	            listPanel.repaint();
+
+	            taskField.setText("");
+	        } else {
+	            JOptionPane.showMessageDialog(this, "Please enter a task!");
+	        }
+	    });
+
+	    // Pressing Enter = add button click
+	    taskField.addActionListener(e -> addButton.doClick());
 
 	    panel.add(taskField);
 	    panel.add(addButton);
@@ -203,12 +270,12 @@ public class UI extends JFrame{
 	}
 
 	private JScrollPane setupTaskListPanel() {
-	    JPanel listPanel = new JPanel();
+	    listPanel = new JPanel();
 	    listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
 	    listPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-	    // Dummy placeholder task (you can add dynamically later)
-	    JLabel dummyTask = new JLabel("• Sample Task");
+	    // Dummy placeholder task
+	    dummyTask = new JLabel("• Sample Task");
 	    dummyTask.setFont(new Font("Chalkboard", Font.PLAIN, 16));
 	    listPanel.add(dummyTask);
 

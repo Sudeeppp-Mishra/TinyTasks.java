@@ -2,6 +2,8 @@ package todopack;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +14,8 @@ public class UI extends JFrame{
 	private JPanel listPanel;
 	private JLabel dummyTask;
 	private boolean isFirstTaskAdded = false;
+	
+	List<String> toDoList = new ArrayList<>();
 	
 	Color menuItemColor = new Color(33, 33, 33);
 	
@@ -232,7 +236,9 @@ public class UI extends JFrame{
 	            // Timestamp label
 	            JLabel timeLabel = new JLabel("  [" + timestamp + "]");
 	            timeLabel.setFont(new Font("Arial", Font.PLAIN, 13));
-	            timeLabel.setForeground(new Color(80, 80, 80)); // darker gray for visibility
+	            timeLabel.setForeground(new Color(50, 50, 50)); // darker gray for visibility
+	            
+	            toDoList.add(taskText);
 
 	            // Handle checkbox toggle (HTML strike-through)
 	            checkBox.addActionListener(ev -> {
@@ -292,12 +298,54 @@ public class UI extends JFrame{
 
 	    for (String text : labels) {
 	        JButton btn = new JButton(text);
-	        btn.setFont(new Font("Arial", Font.BOLD, 14));
+	        btn.setFont(new Font("Chalkboard", Font.BOLD, 14));
 	        btn.setPreferredSize(new Dimension(140, 40));
+	        
+	        btn.addActionListener(e->{
+	        	switch(text) {
+	        	case "All":
+	        		showAllTasks();
+	        		break;
+	        	case "Active":
+	        		showActiveTasks();
+	        		break;
+	        	case "Completed":
+	        		showCompletedTasks();
+	        		break;
+	        	case "Clear All":
+	        		clearAllTasks();
+	        		break;
+	        	}
+		    });
+	        
 	        panel.add(btn);
 	    }
+	    
+	    
 
 	    return panel;
 	}
 	
+	private void showAllTasks() {
+		if(toDoList.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "No tasks to show.");
+		}
+		String result = "Your Tasks: \n";
+		for(int i=0; i<toDoList.size(); i++) {
+			result += (i+1) + ". " + toDoList.get(i) + "\n";
+		}
+		JOptionPane.showMessageDialog(this, result);
+	}
+	
+	private void showActiveTasks() {
+		// TODO: to show all active tasks that has not been completed
+	}
+	
+	private void showCompletedTasks() {
+		//TODO: to show all completed tasks
+	}
+	
+	private void clearAllTasks() {
+		// TODO: all task deleted
+	}
 }

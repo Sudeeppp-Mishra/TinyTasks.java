@@ -23,6 +23,8 @@ public class UI extends JFrame {
     private Color completedTaskColor = new Color(128, 128, 128);
     private Color menuItemColor = new Color(33, 33, 33);
     private Color exitMenuColor = new Color(255, 87, 87);
+    private JPanel titleBar;
+    private Point initialClick;
 
     UI() {
         initializeFrame();
@@ -36,8 +38,71 @@ public class UI extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(500, 600);
         setLocationRelativeTo(null);
+        setUndecorated(true); // Default title bar is forcefully removed
         getContentPane().setBackground(darkBackground);
         setLayout(new BorderLayout());
+    }
+
+    private JPanel createTitleBar() {
+        JPanel titleBar = new JPanel(new BorderLayout());
+        titleBar.setBackground(panelBackground);
+        titleBar.setPreferredSize(new Dimension(0, 30));
+        titleBar.setBorder(BorderFactory.createLineBorder(accentColor));
+
+        JLabel titleLabel = new JLabel("To Do List");
+        titleLabel.setForeground(textColor);
+        titleLabel.setFont(new Font("Chalkboard", Font.BOLD, 14));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+        titleBar.add(titleLabel, BorderLayout.WEST);
+
+        JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        controlPanel.setOpaque(false);
+
+        JButton minimizeButton = new JButton("-");
+        minimizeButton.setPreferredSize(new Dimension(40, 30));
+        minimizeButton.setBackground(buttonBackground);
+        minimizeButton.setForeground(textColor);
+        minimizeButton.setFocusPainted(false);
+        minimizeButton.setBorder(BorderFactory.createEmptyBorder());
+        minimizeButton.addActionListener(e -> setState(Frame.ICONIFIED));
+        controlPanel.add(minimizeButton);
+
+        JButton maximizeButton = new JButton("□");
+        maximizeButton.setPreferredSize(new Dimension(40, 30));
+        maximizeButton.setBackground(buttonBackground);
+        maximizeButton.setForeground(textColor);
+        maximizeButton.setFocusPainted(false);
+        maximizeButton.setBorder(BorderFactory.createEmptyBorder());
+        maximizeButton.addActionListener(e -> {
+            if (getExtendedState() == Frame.MAXIMIZED_BOTH) {
+                setExtendedState(Frame.NORMAL);
+                maximizeButton.setText("□");
+            } else {
+                setExtendedState(Frame.MAXIMIZED_BOTH);
+                maximizeButton.setText("◪");
+            }
+        });
+        controlPanel.add(maximizeButton);
+
+        JButton closeButton = new JButton("×");
+        closeButton.setPreferredSize(new Dimension(40, 30));
+        closeButton.setBackground(buttonBackground);
+        closeButton.setForeground(exitMenuColor);
+        closeButton.setFocusPainted(false);
+        closeButton.setBorder(BorderFactory.createEmptyBorder());
+        closeButton.addActionListener(e -> System.exit(0));
+        controlPanel.add(closeButton);
+
+        titleBar.add(controlPanel, BorderLayout.EAST);
+
+        titleBar.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                initialClick = e.getPoint();
+            }
+        });
+
+        return titleBar;
     }
 
     private void setupMenuBar() {
@@ -217,8 +282,14 @@ public class UI extends JFrame {
         JPanel footerPanel = setupFooterPanel();
         mainPanel.add(footerPanel, BorderLayout.SOUTH);
 
+        JPanel parentPanel = new JPanel(new BorderLayout());
+        parentPanel.setBackground(darkBackground);
+        titleBar = createTitleBar();
+        parentPanel.add(titleBar, BorderLayout.NORTH);
+        parentPanel.add(mainPanel, BorderLayout.CENTER);
+
         setLayout(new BorderLayout());
-        add(mainPanel, BorderLayout.CENTER);
+        add(parentPanel, BorderLayout.CENTER);
     }
 
     private JPanel setupTaskInputPanel() {

@@ -39,6 +39,7 @@ public class UI extends JFrame {
 
     private void initializeFrame() {
         setTitle("To Do List");
+        setExtendedState(MAXIMIZED_BOTH);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(500, 600);
         setLocationRelativeTo(null);

@@ -11,10 +11,12 @@ import java.util.List;
 
 public class UI extends JFrame {
     private JTextField taskField;
+    private JSpinner deadlineSpinner;
+    private JCheckBox deadlineToggle;
     private JPanel listPanel;
     private JLabel dummyTask;
     private boolean isFirstTaskAdded = false;
-    private List<String> toDoList = new ArrayList<>();
+    private List<String[]> toDoList = new ArrayList<>(); // [taskText, deadline, timestamp, completed]
     private Color darkBackground = new Color(30, 30, 30);
     private Color panelBackground = new Color(40, 40, 40);
     private Color textColor = new Color(255, 255, 255);
@@ -25,6 +27,8 @@ public class UI extends JFrame {
     private Color exitMenuColor = new Color(255, 87, 87);
     private JPanel titleBar;
     private Point initialClick;
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm a");
 
     UI() {
         initializeFrame();
@@ -38,7 +42,7 @@ public class UI extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(500, 600);
         setLocationRelativeTo(null);
-        setUndecorated(true); // Default title bar is forcefully removed
+        setUndecorated(true);
         getContentPane().setBackground(darkBackground);
         setLayout(new BorderLayout());
     }
@@ -51,7 +55,7 @@ public class UI extends JFrame {
 
         JLabel titleLabel = new JLabel("To Do List");
         titleLabel.setForeground(textColor);
-        titleLabel.setFont(new Font("Chalkboard", Font.BOLD, 14));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
         titleBar.add(titleLabel, BorderLayout.WEST);
 
@@ -102,6 +106,15 @@ public class UI extends JFrame {
             }
         });
 
+        titleBar.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                int x = getLocation().x + e.getX() - initialClick.x;
+                int y = getLocation().y + e.getY() - initialClick.y;
+                setLocation(x, y);
+            }
+        });
+
         return titleBar;
     }
 
@@ -119,22 +132,22 @@ public class UI extends JFrame {
 
         JMenu fileMenu = setupFileMenu();
         menuBar.add(fileMenu);
-        fileMenu.setFont(new Font("Chalkboard", Font.BOLD, 14));
+        fileMenu.setFont(new Font("Arial", Font.BOLD, 14));
         fileMenu.setForeground(textColor);
 
         JMenu editMenu = setupEditMenu();
         menuBar.add(editMenu);
-        editMenu.setFont(new Font("Chalkboard", Font.BOLD, 14));
+        editMenu.setFont(new Font("Arial", Font.BOLD, 14));
         editMenu.setForeground(textColor);
 
         JMenu viewMenu = setupViewMenu();
         menuBar.add(viewMenu);
-        viewMenu.setFont(new Font("Chalkboard", Font.BOLD, 14));
+        viewMenu.setFont(new Font("Arial", Font.BOLD, 14));
         viewMenu.setForeground(textColor);
 
         JMenu helpMenu = setupHelpMenu();
         menuBar.add(helpMenu);
-        helpMenu.setFont(new Font("Chalkboard", Font.BOLD, 14));
+        helpMenu.setFont(new Font("Arial", Font.BOLD, 14));
         helpMenu.setForeground(textColor);
 
         setJMenuBar(menuBar);
@@ -149,28 +162,28 @@ public class UI extends JFrame {
         newTask.setToolTipText("Create a new task");
         newTask.setForeground(textColor);
         newTask.setBackground(panelBackground);
-        newTask.setFont(new Font("Chalkboard", Font.PLAIN, 13));
+        newTask.setFont(new Font("Arial", Font.PLAIN, 13));
 
         JMenuItem saveTask = new JMenuItem("Save Task");
         fileMenu.add(saveTask);
         saveTask.setToolTipText("Save the current task list to a file");
         saveTask.setForeground(textColor);
         saveTask.setBackground(panelBackground);
-        saveTask.setFont(new Font("Chalkboard", Font.PLAIN, 13));
+        saveTask.setFont(new Font("Arial", Font.PLAIN, 13));
 
         JMenuItem loadTask = new JMenuItem("Load Task");
         fileMenu.add(loadTask);
         loadTask.setToolTipText("Load tasks from a file");
         loadTask.setForeground(textColor);
         loadTask.setBackground(panelBackground);
-        loadTask.setFont(new Font("Chalkboard", Font.PLAIN, 13));
+        loadTask.setFont(new Font("Arial", Font.PLAIN, 13));
 
         JMenuItem export = new JMenuItem("Export");
         fileMenu.add(export);
         export.setToolTipText("Export tasks as .txt");
         export.setForeground(textColor);
         export.setBackground(panelBackground);
-        export.setFont(new Font("Chalkboard", Font.PLAIN, 13));
+        export.setFont(new Font("Arial", Font.PLAIN, 13));
 
         fileMenu.addSeparator();
 
@@ -179,7 +192,7 @@ public class UI extends JFrame {
         exit.setToolTipText("Close the application");
         exit.setForeground(exitMenuColor);
         exit.setBackground(panelBackground);
-        exit.setFont(new Font("Chalkboard", Font.PLAIN, 13));
+        exit.setFont(new Font("Arial", Font.PLAIN, 13));
 
         return fileMenu;
     }
@@ -193,28 +206,28 @@ public class UI extends JFrame {
         undo.setToolTipText("Undo the last change");
         undo.setForeground(textColor);
         undo.setBackground(panelBackground);
-        undo.setFont(new Font("Chalkboard", Font.PLAIN, 13));
+        undo.setFont(new Font("Arial", Font.PLAIN, 13));
 
         JMenuItem redo = new JMenuItem("Redo");
         editMenu.add(redo);
         redo.setToolTipText("Redo the previously undone action");
         redo.setForeground(textColor);
         redo.setBackground(panelBackground);
-        redo.setFont(new Font("Chalkboard", Font.PLAIN, 13));
+        redo.setFont(new Font("Arial", Font.PLAIN, 13));
 
         JMenuItem deleteTask = new JMenuItem("Delete Task");
         editMenu.add(deleteTask);
         deleteTask.setToolTipText("Delete the selected task");
         deleteTask.setForeground(textColor);
         deleteTask.setBackground(panelBackground);
-        deleteTask.setFont(new Font("Chalkboard", Font.PLAIN, 13));
+        deleteTask.setFont(new Font("Arial", Font.PLAIN, 13));
 
         JMenuItem clearAllTasks = new JMenuItem("Clear All Tasks");
         editMenu.add(clearAllTasks);
         clearAllTasks.setToolTipText("Remove all tasks");
         clearAllTasks.setForeground(textColor);
         clearAllTasks.setBackground(panelBackground);
-        clearAllTasks.setFont(new Font("Chalkboard", Font.PLAIN, 13));
+        clearAllTasks.setFont(new Font("Arial", Font.PLAIN, 13));
 
         return editMenu;
     }
@@ -228,21 +241,21 @@ public class UI extends JFrame {
         showCompletedTasks.setToolTipText("Toggle view for completed tasks");
         showCompletedTasks.setForeground(textColor);
         showCompletedTasks.setBackground(panelBackground);
-        showCompletedTasks.setFont(new Font("Chalkboard", Font.PLAIN, 13));
+        showCompletedTasks.setFont(new Font("Arial", Font.PLAIN, 13));
 
         JMenuItem sortByDeadline = new JMenuItem("Sort by Deadline");
         viewMenu.add(sortByDeadline);
         sortByDeadline.setToolTipText("Sort tasks by due date");
         sortByDeadline.setForeground(textColor);
         sortByDeadline.setBackground(panelBackground);
-        sortByDeadline.setFont(new Font("Chalkboard", Font.PLAIN, 13));
+        sortByDeadline.setFont(new Font("Arial", Font.PLAIN, 13));
 
         JMenuItem sortByPriority = new JMenuItem("Sort by Priority");
         viewMenu.add(sortByPriority);
         sortByPriority.setToolTipText("Sort tasks by priority");
         sortByPriority.setForeground(textColor);
         sortByPriority.setBackground(panelBackground);
-        sortByPriority.setFont(new Font("Chalkboard", Font.PLAIN, 13));
+        sortByPriority.setFont(new Font("Arial", Font.PLAIN, 13));
 
         return viewMenu;
     }
@@ -256,14 +269,14 @@ public class UI extends JFrame {
         howToUse.setToolTipText("Basic guide/instructions for using the app");
         howToUse.setForeground(textColor);
         howToUse.setBackground(panelBackground);
-        howToUse.setFont(new Font("Chalkboard", Font.PLAIN, 13));
+        howToUse.setFont(new Font("Arial", Font.PLAIN, 13));
 
         JMenuItem about = new JMenuItem("About");
         helpMenu.add(about);
         about.setToolTipText("App version and other info.");
         about.setForeground(textColor);
         about.setBackground(panelBackground);
-        about.setFont(new Font("Chalkboard", Font.PLAIN, 13));
+        about.setFont(new Font("Arial", Font.PLAIN, 13));
 
         return helpMenu;
     }
@@ -298,16 +311,39 @@ public class UI extends JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
         taskField = new JTextField();
-        taskField.setPreferredSize(new Dimension(400, 35));
-        taskField.setFont(new Font("Chalkboard", Font.PLAIN, 16));
+        taskField.setPreferredSize(new Dimension(200, 35));
+        taskField.setFont(new Font("Arial", Font.PLAIN, 16));
         taskField.setBackground(new Color(50, 50, 50));
         taskField.setForeground(textColor);
         taskField.setCaretColor(textColor);
         taskField.setBorder(BorderFactory.createLineBorder(accentColor));
 
+        deadlineToggle = new JCheckBox("Set Deadline");
+        deadlineToggle.setFont(new Font("Arial", Font.PLAIN, 14));
+        deadlineToggle.setForeground(textColor);
+        deadlineToggle.setBackground(panelBackground);
+        deadlineToggle.setFocusPainted(false);
+
+        deadlineSpinner = new JSpinner(new SpinnerDateModel());
+        deadlineSpinner.setPreferredSize(new Dimension(120, 35));
+        deadlineSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
+        deadlineSpinner.setEditor(new JSpinner.DateEditor(deadlineSpinner, "yyyy-MM-dd"));
+        deadlineSpinner.setBackground(new Color(50, 50, 50));
+        deadlineSpinner.setForeground(textColor);
+        deadlineSpinner.setEnabled(false);
+        JComponent editor = deadlineSpinner.getEditor();
+        if (editor instanceof JSpinner.DefaultEditor) {
+            ((JSpinner.DefaultEditor) editor).getTextField().setBackground(new Color(50, 50, 50));
+            ((JSpinner.DefaultEditor) editor).getTextField().setForeground(textColor);
+            ((JSpinner.DefaultEditor) editor).getTextField().setCaretColor(textColor);
+            ((JSpinner.DefaultEditor) editor).getTextField().setBorder(BorderFactory.createLineBorder(accentColor));
+        }
+
+        deadlineToggle.addActionListener(e -> deadlineSpinner.setEnabled(deadlineToggle.isSelected()));
+
         JButton addButton = new JButton("Add Task");
         addButton.setPreferredSize(new Dimension(120, 35));
-        addButton.setFont(new Font("Chalkboard", Font.BOLD, 14));
+        addButton.setFont(new Font("Arial", Font.BOLD, 14));
         addButton.setBackground(buttonBackground);
         addButton.setForeground(textColor);
         addButton.setFocusPainted(false);
@@ -321,7 +357,10 @@ public class UI extends JFrame {
                     isFirstTaskAdded = true;
                 }
 
-                String timestamp = new SimpleDateFormat("yyyy-MM-dd hh:mm a").format(new Date());
+                String timestamp = timestampFormat.format(new Date());
+                String deadline = deadlineToggle.isSelected() ? dateFormat.format((Date) deadlineSpinner.getValue()) : "No Deadline";
+                String[] task = {taskText, deadline, timestamp, "false"};
+                toDoList.add(task);
 
                 JPanel taskRow = new JPanel();
                 taskRow.setLayout(new BoxLayout(taskRow, BoxLayout.X_AXIS));
@@ -330,18 +369,17 @@ public class UI extends JFrame {
                 taskRow.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
                 JCheckBox taskCheckBox = new JCheckBox(taskText);
-                taskCheckBox.setFont(new Font("Chalkboard", Font.PLAIN, 16));
+                taskCheckBox.setFont(new Font("Arial", Font.PLAIN, 16));
                 taskCheckBox.setOpaque(false);
                 taskCheckBox.setForeground(textColor);
                 taskCheckBox.setBackground(panelBackground);
 
-                JLabel timeLabel = new JLabel("  [" + timestamp + "]");
+                JLabel timeLabel = new JLabel("  [" + timestamp + "] [Due: " + deadline + "]");
                 timeLabel.setFont(new Font("Arial", Font.PLAIN, 13));
                 timeLabel.setForeground(completedTaskColor);
 
-                toDoList.add(taskText);
-
                 taskCheckBox.addActionListener(ev -> {
+                    task[3] = String.valueOf(taskCheckBox.isSelected());
                     if (taskCheckBox.isSelected()) {
                         taskCheckBox.setText("<html><strike>" + taskText + "</strike></html>");
                         taskCheckBox.setForeground(completedTaskColor);
@@ -361,6 +399,8 @@ public class UI extends JFrame {
                 listPanel.repaint();
 
                 taskField.setText("");
+                deadlineToggle.setSelected(false);
+                deadlineSpinner.setEnabled(false);
             } else {
                 JOptionPane.showMessageDialog(this, "Please enter a task!");
             }
@@ -369,6 +409,8 @@ public class UI extends JFrame {
         taskField.addActionListener(e -> addButton.doClick());
 
         panel.add(taskField);
+        panel.add(deadlineToggle);
+        panel.add(deadlineSpinner);
         panel.add(addButton);
 
         return panel;
@@ -381,7 +423,7 @@ public class UI extends JFrame {
         listPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         dummyTask = new JLabel("• No tasks yet. Add a task to start!");
-        dummyTask.setFont(new Font("Chalkboard", Font.PLAIN, 16));
+        dummyTask.setFont(new Font("Arial", Font.PLAIN, 16));
         dummyTask.setForeground(completedTaskColor);
         listPanel.add(dummyTask);
 
@@ -400,7 +442,7 @@ public class UI extends JFrame {
 
         for (String text : labels) {
             JButton btn = new JButton(text);
-            btn.setFont(new Font("Chalkboard", Font.BOLD, 14));
+            btn.setFont(new Font("Arial", Font.BOLD, 14));
             btn.setPreferredSize(new Dimension(120, 35));
             btn.setBackground(buttonBackground);
             btn.setForeground(textColor);
@@ -433,23 +475,75 @@ public class UI extends JFrame {
     private void showAllTasks() {
         if (toDoList.isEmpty()) {
             JOptionPane.showMessageDialog(this, "No tasks to show.");
+        } else {
+            StringBuilder result = new StringBuilder("Your Tasks:\n");
+            for (int i = 0; i < toDoList.size(); i++) {
+                String[] task = toDoList.get(i);
+                result.append(i + 1)
+                      .append(". ")
+                      .append(task[0])
+                      .append(" [Due: ")
+                      .append(task[1])
+                      .append("]\n");
+            }
+            JOptionPane.showMessageDialog(this, result.toString());
         }
-        String result = "Your Tasks: \n";
-        for (int i = 0; i < toDoList.size(); i++) {
-            result += (i + 1) + ". " + toDoList.get(i) + "\n";
-        }
-        JOptionPane.showMessageDialog(this, result);
     }
 
     private void showActiveTasks() {
-        // TODO: Implement
+        if (toDoList.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No tasks to show.");
+        } else {
+            StringBuilder result = new StringBuilder("Active Tasks:\n");
+            int index = 1;
+            for (String[] task : toDoList) {
+                if (!Boolean.parseBoolean(task[3])) {
+                    result.append(index++)
+                          .append(". ")
+                          .append(task[0])
+                          .append(" [Due: ")
+                          .append(task[1])
+                          .append("]\n");
+                }
+            }
+            JOptionPane.showMessageDialog(this, result.length() > 13 ? result.toString() : "No active tasks.");
+        }
     }
 
     private void showCompletedTasks() {
-        // TODO: Implement
+        if (toDoList.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No tasks to show.");
+        } else {
+            StringBuilder result = new StringBuilder("Completed Tasks:\n");
+            int index = 1;
+            for (String[] task : toDoList) {
+                if (Boolean.parseBoolean(task[3])) {
+                    result.append(index++)
+                          .append(". ")
+                          .append(task[0])
+                          .append(" [Due: ")
+                          .append(task[1])
+                          .append("]\n");
+                }
+            }
+            JOptionPane.showMessageDialog(this, result.length() > 16 ? result.toString() : "No completed tasks.");
+        }
     }
 
     private void clearAllTasks() {
-        // TODO: Implement
+        if (!toDoList.isEmpty()) {
+            int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to clear all tasks?", "Clear All Tasks", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                toDoList.clear();
+                listPanel.removeAll();
+                listPanel.add(dummyTask);
+                isFirstTaskAdded = false;
+                listPanel.revalidate();
+                listPanel.repaint();
+                JOptionPane.showMessageDialog(this, "All tasks cleared.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "No tasks to clear.");
+        }
     }
 }
